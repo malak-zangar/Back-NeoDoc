@@ -13,6 +13,8 @@ import com.example.backneodoc.security.jwt.JwtUtils;
 import com.example.backneodoc.security.services.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -26,10 +28,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
-@RestController
-@RequestMapping("/api/auth")
-public class AuthController {
+
+public class AuthController{
     @Autowired
     AuthenticationManager authenticationManager;
 
@@ -44,6 +44,12 @@ public class AuthController {
 
     @Autowired
     JwtUtils jwtUtils;
+
+    @Autowired
+    JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+
+    @Autowired
+    JavaMailSender emailSender;
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {

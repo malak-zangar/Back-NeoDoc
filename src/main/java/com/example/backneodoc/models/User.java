@@ -1,5 +1,6 @@
 package com.example.backneodoc.models;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -31,6 +32,7 @@ public class User {
     @Size(max = 20)
     private String username;
 
+    @Column(unique = true)
     @NotBlank
     @Size(max = 50)
     @Email
@@ -45,6 +47,25 @@ public class User {
 
     private String poste;
 
+    private String token;
+    @Column(columnDefinition = "TIMESTAMP")
+    private LocalDateTime tokenCreationDate;
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public LocalDateTime getTokenCreationDate() {
+        return tokenCreationDate;
+    }
+
+    public void setTokenCreationDate(LocalDateTime tokenCreationDate) {
+        this.tokenCreationDate = tokenCreationDate;
+    }
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(	name = "user_roles",
