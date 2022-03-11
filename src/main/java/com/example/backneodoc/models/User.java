@@ -48,24 +48,9 @@ public class User {
     private String poste;
 
     private String token;
+
     @Column(columnDefinition = "TIMESTAMP")
     private LocalDateTime tokenCreationDate;
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public LocalDateTime getTokenCreationDate() {
-        return tokenCreationDate;
-    }
-
-    public void setTokenCreationDate(LocalDateTime tokenCreationDate) {
-        this.tokenCreationDate = tokenCreationDate;
-    }
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(	name = "user_roles",
@@ -140,6 +125,20 @@ public class User {
     public void setEmail(String email) {
         this.email = email;
     }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public LocalDateTime getTokenCreationDate() {
+        return tokenCreationDate;
+    }
+
+    public void setTokenCreationDate(LocalDateTime tokenCreationDate) {this.tokenCreationDate = tokenCreationDate;}
 
     public String getPassword() {
         return password;
