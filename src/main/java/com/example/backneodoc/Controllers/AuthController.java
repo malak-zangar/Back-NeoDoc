@@ -56,6 +56,13 @@ public class AuthController{
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
+        if (!userRepository.existsByUsername(loginRequest.getUsername())) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Nom utilisateur n'existe pas"));
+        }
+        
+
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
@@ -79,13 +86,13 @@ public class AuthController{
         if (userRepository.existsByUsername(signUpRequest.getUsername())) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Erreur: Nom utilisateur existe déja!"));
+                    .body(new MessageResponse(" Nom utilisateur existe déja!"));
         }
 
         if (userRepository.existsByEmail(signUpRequest.getEmail())) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Erreur: Email existe déja!"));
+                    .body(new MessageResponse(" Email existe déja!"));
         }
 
         // Create new user's account

@@ -1,5 +1,6 @@
 package com.example.backneodoc.payload.request;
 
+import javax.persistence.Column;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -32,6 +33,8 @@ public class SignupRequest {
 
     @NotBlank
     private String poste;
+
+    private Boolean enabled=false;
 
     public String getFirstname() {
         return firstname;
@@ -88,4 +91,8 @@ public class SignupRequest {
     public void setPoste(String poste) {
         this.poste = poste;
     }
+
+    public Boolean getEnabled() {return enabled;}
+
+    public void setEnabled(Boolean enabled) {this.enabled = enabled;}
 }

@@ -2,7 +2,6 @@ package com.example.backneodoc.Controllers;
 import com.example.backneodoc.email.context.AbstractEmailContext;
 import com.example.backneodoc.email.service.EmailService;
 import com.example.backneodoc.models.User;
-import com.example.backneodoc.payload.request.ResetRequest;
 import com.example.backneodoc.repository.UserRepository;
 import com.example.backneodoc.security.services.MDPUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,9 +9,6 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
