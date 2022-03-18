@@ -9,12 +9,16 @@ import com.example.backneodoc.payload.response.MessageResponse;
 import com.example.backneodoc.repository.RoleRepository;
 import com.example.backneodoc.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.validation.Valid;
 import java.util.*;
+
+import static org.springframework.data.domain.Sort.Direction.ASC;
 
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -31,16 +35,21 @@ public class UserController {
     @Autowired
     PasswordEncoder encoder;
 
+    @GetMapping("/users/enattente")
+    public List<User> getAllEnAttente() {
+        return userRepository.findAllByEnabled(false,Sort.by(Sort.Direction.ASC, "poste","username"));
+    }
+
     @GetMapping("/users")
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<User> GetAllByEnabled() {
+        return userRepository.findAllByEnabled(true,Sort.by(Sort.Direction.ASC, "poste","username"));
     }
 
     @GetMapping("/users/{id}")
     public ResponseEntity<User> getUserById(@PathVariable(value = "id") Long userId)
             throws ResourceNotFoundException {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("Utilisateur non trouvé pour l'id :: " + userId));
+                .orElseThrow(() -> new ResourceNotFoundException("Utilisateur non trouvé pour l'id : " + userId));
         return ResponseEntity.ok().body(user);
     }
 
@@ -105,7 +114,7 @@ public class UserController {
     public ResponseEntity<User> updateUser(@PathVariable(value = "id") Long userId,
                                                    @Valid @RequestBody SignupRequest signupRequest) throws ResourceNotFoundException {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("Utilisateur non trouvé pour cet id:: " + userId));
+                .orElseThrow(() -> new ResourceNotFoundException("Utilisateur non trouvé pour cet id: " + userId));
 
         user.setEmail(signupRequest.getEmail());
         user.setLastname(signupRequest.getLastname());
@@ -155,6 +164,18 @@ public class UserController {
         userRepository.delete(user);
         Map<String, Boolean> response = new HashMap<>();
         response.put("supprimé", Boolean.TRUE);
+        return response;
+    }
+    @PutMapping("/users/accept/{id}")
+    public Map<String, Boolean> acceptUser(@PathVariable(value = "id") Long userId)
+            throws ResourceNotFoundException {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Utilisateur non trouvé pour cet id: " + userId));
+
+        user.setEnabled(true);
+        userRepository.save(user);
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("accepté", Boolean.TRUE);
         return response;
     }
 }

@@ -61,7 +61,8 @@ public class AuthController{
                     .badRequest()
                     .body(new MessageResponse("Nom utilisateur n'existe pas"));
         }
-        
+
+
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
