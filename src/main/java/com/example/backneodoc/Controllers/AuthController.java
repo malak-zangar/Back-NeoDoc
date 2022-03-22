@@ -62,7 +62,11 @@ public class AuthController{
                     .body(new MessageResponse("Nom utilisateur n'existe pas"));
         }
 
-
+        else if (!userRepository.findByUsername(loginRequest.getUsername()).getEnabled()){
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Merci d'attendre l'activation de votre compte par l'administrateur"));
+        }
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
@@ -79,6 +83,7 @@ public class AuthController{
                 userDetails.getId(),
                 userDetails.getUsername(),
                 userDetails.getEmail(),
+                userDetails.isEnabled(),
                 roles));
     }
 

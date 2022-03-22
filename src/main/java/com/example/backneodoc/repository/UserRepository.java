@@ -10,9 +10,9 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-    Optional<User> findByUsername(String username);
+   // Optional<User> findByUsername(String username);
     Boolean existsByUsername(String username);
-
+User findByUsername(String username);
     Boolean existsByEmail(String email);
 
     User findByEmail(String email) ;
@@ -21,5 +21,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     List<User> findAllByEnabled(Boolean enabled, Sort by);
 
-    boolean existsByPassword(String password);
+    Boolean existsByPassword(String password);
 }
