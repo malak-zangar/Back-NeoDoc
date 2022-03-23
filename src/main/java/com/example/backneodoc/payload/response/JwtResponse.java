@@ -7,8 +7,11 @@ public class JwtResponse {
     private String type = "Bearer";
     private Long id;
     private String username;
+    private String firstname;
+    private String lastname;
     private String email;
     private Boolean enabled;
+    private String poste;
     private List<String> roles;
 
     public JwtResponse(String accessToken, Long id, String username, String email, Boolean enabled, List<String> roles) {
@@ -17,6 +20,17 @@ public class JwtResponse {
         this.username = username;
         this.email = email;
         this.enabled=enabled;
+        this.roles = roles;
+    }
+    public JwtResponse(String accessToken, Long id, String username,String firstname,String lastname, String email, Boolean enabled, String poste, List<String> roles) {
+        this.token = accessToken;
+        this.id = id;
+        this.username = username;
+        this.firstname=firstname;
+        this.lastname=lastname;
+        this.email = email;
+        this.enabled=enabled;
+        this.poste=poste;
         this.roles = roles;
     }
 
@@ -63,4 +77,20 @@ public class JwtResponse {
     public List<String> getRoles() {
         return roles;
     }
+
+    public String getFirstname() {return firstname;}
+
+    public void setFirstname(String firstname) {this.firstname = firstname;}
+
+    public String getLastname() {return lastname;}
+
+    public void setLastname(String lastname) {this.lastname = lastname;}
+
+    public Boolean getEnabled() {return enabled;}
+
+    public void setEnabled(Boolean enabled) {this.enabled = enabled;}
+
+    public String getPoste() {return poste;}
+
+    public void setPoste(String poste) {this.poste = poste;}
 }

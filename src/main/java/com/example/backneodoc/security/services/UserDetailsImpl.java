@@ -18,12 +18,18 @@ public class UserDetailsImpl implements UserDetails {
 
     private String username;
 
+    private String firstname;
+
+    private String lastname;
+
     private String email;
 
     @JsonIgnore
     private String password;
 
     private Boolean enabled;
+
+    private String poste;
 
     private Collection<? extends GrantedAuthority> authorities;
 
@@ -36,6 +42,19 @@ public class UserDetailsImpl implements UserDetails {
         this.enabled=enabled;
         this.authorities = authorities;
     }
+    public UserDetailsImpl(Long id, String username,String firstname,String lastname, String email, String password,Boolean enabled,String poste,
+                           Collection<? extends GrantedAuthority> authorities) {
+        this.id = id;
+        this.username = username;
+        this.firstname=firstname;
+        this.lastname=lastname;
+        this.email = email;
+        this.password = password;
+        this.enabled=enabled;
+        this.poste=poste;
+        this.authorities = authorities;
+
+    }
 
     public static UserDetailsImpl build(User user) {
         List<GrantedAuthority> authorities = user.getRoles().stream()
@@ -45,9 +64,12 @@ public class UserDetailsImpl implements UserDetails {
         return new UserDetailsImpl(
                 user.getId(),
                 user.getUsername(),
+                user.getFirstname(),
+                user.getLastname(),
                 user.getEmail(),
                 user.getPassword(),
                 user.getEnabled(),
+                user.getPoste(),
                 authorities);
     }
 
@@ -74,7 +96,17 @@ public class UserDetailsImpl implements UserDetails {
         return username;
     }
 
+    public String getFirstname() {
+        return firstname;
+    }
 
+    public String getLastname() {
+        return lastname;
+    }
+
+    public Boolean getEnabled(){return enabled;}
+
+    public String getPoste(){return poste;}
 
     @Override
     public boolean isAccountNonExpired() {

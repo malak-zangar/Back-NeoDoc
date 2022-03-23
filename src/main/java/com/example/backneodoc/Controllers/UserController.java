@@ -112,7 +112,7 @@ public class UserController {
 
     @PutMapping("/users/{id}")
     public ResponseEntity<User> updateUser(@PathVariable(value = "id") Long userId,
-                                                   @Valid @RequestBody SignupRequest signupRequest) throws ResourceNotFoundException {
+                                           @RequestBody SignupRequest signupRequest) throws ResourceNotFoundException {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Utilisateur non trouvé pour cet id: " + userId));
 
