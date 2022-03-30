@@ -116,40 +116,13 @@ public class UserController {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Utilisateur non trouvé pour cet id: " + userId));
 
-        user.setEmail(signupRequest.getEmail());
+     /* user.setEmail(signupRequest.getEmail());
         user.setLastname(signupRequest.getLastname());
         user.setFirstname(signupRequest.getFirstname());
         user.setUsername(signupRequest.getUsername());
+        user.setEnabled(signupRequest.getEnabled()); */
+
         user.setPoste(signupRequest.getPoste());
-        user.setEnabled(signupRequest.getEnabled());
-
-        Set<String> strRoles = signupRequest.getRole();
-        Set<Role> roles = new HashSet<>();
-
-        if (strRoles == null) {
-            Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-                    .orElseThrow(() -> new RuntimeException("Erreur: Role n'existe pas."));
-            roles.add(adminRole);
-        } else {
-            strRoles.forEach(role -> {
-                switch (role) {
-                    case "user":
-                        Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                                .orElseThrow(() -> new RuntimeException("Erreur: Role n'existe pas."));
-                        roles.add(userRole);
-                        break;
-
-                    default:
-                        Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-                                .orElseThrow(() -> new RuntimeException("Erreur: Role n'existe pas."));
-                        roles.add(adminRole);
-                }
-            });
-        }
-
-        user.setRoles(roles);
-
-      //  user.setRoles(userDetails.getRoles());
 
         final User updatedUser = userRepository.save(user);
         return ResponseEntity.ok(updatedUser);

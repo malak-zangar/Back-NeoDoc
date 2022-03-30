@@ -58,6 +58,14 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "favoris",
+            joinColumns = { @JoinColumn(name = "id_user") },
+            inverseJoinColumns = { @JoinColumn(name = "id_document") })
+
+    private Set<Document> doc_favoris = new HashSet<>();
+
+
     public User() {
     }
 
