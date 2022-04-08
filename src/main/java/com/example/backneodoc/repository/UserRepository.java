@@ -23,4 +23,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     List<User> findAllByEnabled(Boolean enabled, Sort by);
 
+    Optional<User> findById(Long id);
 }

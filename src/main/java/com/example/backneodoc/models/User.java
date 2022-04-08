@@ -164,5 +164,7 @@ public class User {
         this.roles = roles;
     }
 
+    public Set<Document> getDoc_favoris() {return doc_favoris;}
 
+    public void setDoc_favoris(Set<Document> doc_favoris) {this.doc_favoris = doc_favoris;}
 }

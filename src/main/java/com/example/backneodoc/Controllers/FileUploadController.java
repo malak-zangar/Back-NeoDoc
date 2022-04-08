@@ -10,10 +10,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -53,6 +57,9 @@ public class FileUploadController {
     @Autowired
     public DocumentRepository documentRepository;
 
+    @Autowired
+    JavaMailSender javaMailSender;
+
     /*@PostMapping("/upload")
     public Document uploadFile(@RequestParam("document") MultipartFile file) throws IOException {
 
@@ -60,9 +67,11 @@ public class FileUploadController {
     }*/
 
     @PostMapping("/upload")
-    public  ResponseEntity<?> uploadMultipleFiles(@RequestParam("files") MultipartFile[] files) {
-        for (MultipartFile file: files) {
+   // public  ResponseEntity<?> uploadMultipleFiles(@RequestParam("files") MultipartFile[] files,@RequestParam("username") String username) {
+        public  ResponseEntity<?> uploadMultipleFiles(@RequestParam("files") MultipartFile[] files) {
+            for (MultipartFile file: files) {
             documentServices.saveFile(file);}
+
         return ResponseEntity.ok(new MessageResponse("fichier ajouté avec succée!"));
     }
 
@@ -82,11 +91,13 @@ public class FileUploadController {
     }
 
     @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public Map<String, Boolean> deleteUser(@PathVariable(value = "id") Long userId) throws ResourceNotFoundException {
         return documentServices.deleteDoc(userId);
     }
 
     @PutMapping("/update/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Document> updateDoc(@PathVariable(value = "id") Long docId,
                                               @RequestBody DocRequest docRequest) throws ResourceNotFoundException {
         return documentServices.updateDoc(docId,docRequest);}

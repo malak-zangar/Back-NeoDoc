@@ -24,18 +24,16 @@ public class Document {
     @Column(name = "data", nullable = false)
     private byte[] data;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE},mappedBy ="doc_favoris" )
-    private Set<User> favoris = new HashSet<>();
+    //@ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE},mappedBy ="doc_favoris" )
+    //private Set<User> favoris = new HashSet<>();
 
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "doc_tag", joinColumns = { @JoinColumn(name = "post_id") }, inverseJoinColumns = { @JoinColumn(name = "tag_id") })
-
     private Set<Tag> tags = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "doc_dep", joinColumns = { @JoinColumn(name = "id_doc") }, inverseJoinColumns = { @JoinColumn(name = "id_dep") })
-
     private Set<Departement> departements = new HashSet<>();
 
     public Document() {
@@ -48,11 +46,10 @@ public class Document {
         this.data=data;
     }
 
-    public Document(String titre, String url, String type, Set<User> favoris, Set<Tag> tags,Set<Departement> dep) {
+    public Document(String titre, String url, String type, Set<Tag> tags,Set<Departement> dep) {
         this.titre = titre;
         this.url = url;
         this.type = type;
-        this.favoris = favoris;
         this.tags = tags;
         this.departements=dep;
     }
@@ -73,9 +70,6 @@ public class Document {
 
     public void setTitre(String titre) {this.titre = titre;}
 
-    public Set<User> getFavoris() {return favoris;}
-
-    public void setFavoris(Set<User> favoris) {this.favoris = favoris;}
 
     public Set<Tag> getTags() {return tags;}
 
@@ -88,4 +82,12 @@ public class Document {
     public Set<Departement> getDepartements() {return departements;}
 
     public void setDepartements(Set<Departement> departements) {this.departements = departements;}
+/*
+    public Set<User> getFavoris() {
+        return favoris;
+    }
+
+    public void setFavoris(Set<User> favoris) {
+        this.favoris = favoris;
+    }*/
 }
