@@ -82,6 +82,28 @@ public class FileUploadController {
         return ResponseEntity.ok(new MessageResponse(""));
     }
 
+    @PutMapping("/update/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    /*public ResponseEntity<Document> updateDoc(@PathVariable(value = "id") Long docId,
+                                              @RequestBody DocRequest docRequest,
+                                              @RequestParam(value="tags") Set<String> tags) throws ResourceNotFoundException {
+        return documentServices.updateDoc(docId,docRequest,tags);}*/
+    public ResponseEntity<Document> updateDoc(@PathVariable(value = "id") Long docId,
+                                              @RequestParam(value="titre") String titre,@RequestParam(value="dep") String dep,
+                                              @RequestParam(value="tags") Set<String> tags) throws ResourceNotFoundException {
+        return documentServices.updateDoc(docId,titre,dep,tags);}
+
+    @GetMapping("/download/{id:.+}")
+    public ResponseEntity<Resource> downloadFile(@PathVariable Long id, HttpServletRequest request) {
+        // Load file as Resource
+        Document document = documentServices.getDocById(id);
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(document.getType()))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + document.getTitre() + "\"")
+                .body(new ByteArrayResource(document.getData()));
+    }
+
     @GetMapping("/{id}")
     public Document getFile(@PathVariable Long id) throws IOException {
         return documentServices.getDocById(id);
@@ -101,28 +123,6 @@ public class FileUploadController {
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public Map<String, Boolean> deleteUser(@PathVariable(value = "id") Long userId) throws ResourceNotFoundException {
         return documentServices.deleteDoc(userId);
-    }
-
-    @PutMapping("/update/{id}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    /*public ResponseEntity<Document> updateDoc(@PathVariable(value = "id") Long docId,
-                                              @RequestBody DocRequest docRequest,
-                                              @RequestParam(value="tags") Set<String> tags) throws ResourceNotFoundException {
-        return documentServices.updateDoc(docId,docRequest,tags);}*/
-    public ResponseEntity<Document> updateDoc(@PathVariable(value = "id") Long docId,
-                    @RequestParam(value="titre") String titre,@RequestParam(value="dep") String dep,
-                                              @RequestParam(value="tags") Set<String> tags) throws ResourceNotFoundException {
-        return documentServices.updateDoc(docId,titre,dep,tags);}
-
-    @GetMapping("/download/{id:.+}")
-    public ResponseEntity<Resource> downloadFile(@PathVariable Long id, HttpServletRequest request) {
-        // Load file as Resource
-        Document document = documentServices.getDocById(id);
-
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(document.getType()))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + document.getTitre() + "\"")
-                .body(new ByteArrayResource(document.getData()));
     }
 
     @GetMapping("/tags")

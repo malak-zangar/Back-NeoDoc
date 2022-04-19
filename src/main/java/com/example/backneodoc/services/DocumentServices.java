@@ -4,6 +4,7 @@ import com.example.backneodoc.Exceptions.ResourceNotFoundException;
 import com.example.backneodoc.models.Document;
 import com.example.backneodoc.models.Tag;
 import com.example.backneodoc.payload.request.DocRequest;
+import com.example.backneodoc.payload.response.MessageResponse;
 import com.example.backneodoc.repository.DocumentRepository;
 import com.example.backneodoc.repository.TagRepository;
 import com.example.backneodoc.security.services.UserDetailsImpl;
@@ -36,7 +37,6 @@ public class DocumentServices {
 
     @Autowired
     JavaMailSender javaMailSender;
-
 
     public Document store(MultipartFile file) throws IOException {
         String filename=file.getOriginalFilename();
@@ -108,31 +108,20 @@ public class DocumentServices {
         return response;
     }
 
-   /* public ResponseEntity<Document> updateDoc(@PathVariable(value = "id") Long docId,
-                                           @RequestBody DocRequest docRequest) throws ResourceNotFoundException {
-        Set<Tag> stag= new HashSet<>();
-        Document document = documentRepository.findById(docId)
-                .orElseThrow(() -> new ResourceNotFoundException("document non trouvé pour cet id: " + docId));
-       for ( String tag : docRequest.getTag()){
-            Tag  ntag = new Tag(tag);
-            System.out.println(ntag);
-            tagRepository.save(ntag);
-            stag.add(ntag);
-        }
-        document.setTags(stag);
-        document.setTitre(docRequest.getTitre());
-
-        document.setDepartements(docRequest.getDep());
-
-
-        final Document updatedDoc = documentRepository.save(document);
-        return ResponseEntity.ok(updatedDoc);
-    }*/
-
     public ResponseEntity<Document> updateDoc(Long docId,String titre,String dep,Set<String> tags) throws ResourceNotFoundException {
         Set<Tag> stag= new HashSet<>();
         Document document = documentRepository.findById(docId)
                 .orElseThrow(() -> new ResourceNotFoundException("document non trouvé pour cet id: " + docId));
+        List<Document> t=documentRepository.findAllByTitre(document.getTitre());
+        if(t!=null)
+
+        {for(Document doc:t){
+            if (doc.getDepartements().equals(dep) && (doc.getId()!=document.getId()))
+            {
+                System.out.println("Nom du fichier " + titre + " existe déja dans le departement " + dep);
+                 return ResponseEntity.badRequest().body(null);
+            }
+        }}
         for ( String tag : tags){
             System.out.println("hello");
             if (tagRepository.findByLibelle(tag)!=null){
@@ -144,13 +133,13 @@ public class DocumentServices {
                 tagRepository.save(ntag);
                 stag.add(ntag);}
         }
+
         document.setTags(stag);
         document.setTitre(titre);
         document.setDepartements(dep);
 
-
         final Document updatedDoc = documentRepository.save(document);
         return ResponseEntity.ok(updatedDoc);
-}
+    }
 }
 
