@@ -14,5 +14,13 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
     Optional<Document> findByTitre(String name);
     List<Document> findAll(Sort by);
 
+
+    List<Document> findAllByTitre(String name);
+
     Optional<Document> findById(Long id);
+
+    Boolean existsByTitre(String titre);
+
+    Document findByDepartements(String dep);
+
 }

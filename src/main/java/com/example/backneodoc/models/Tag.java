@@ -14,11 +14,7 @@ public class Tag {
     @Column(nullable = false, unique = true)
     private String libelle;
 
-    @ManyToMany(fetch = FetchType.LAZY,
-            cascade = {
-                    CascadeType.PERSIST,
-                    CascadeType.MERGE},
-            mappedBy = "tags")
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "tags")
     private Set<Document> document_t = new HashSet<>();
 
     public Tag() {

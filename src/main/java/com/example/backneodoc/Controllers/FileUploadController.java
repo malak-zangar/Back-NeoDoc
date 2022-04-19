@@ -2,50 +2,31 @@ package com.example.backneodoc.Controllers;
 
 import com.example.backneodoc.Exceptions.ResourceNotFoundException;
 import com.example.backneodoc.models.Document;
-import com.example.backneodoc.payload.request.DocRequest;
+import com.example.backneodoc.models.Tag;
 import com.example.backneodoc.payload.response.MessageResponse;
 import com.example.backneodoc.repository.DocumentRepository;
+import com.example.backneodoc.repository.TagRepository;
 import com.example.backneodoc.services.DocumentServices;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.print.Doc;
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.Deflater;
+import java.util.Optional;
+import java.util.Set;
 
 @CrossOrigin(origins="*",maxAge = 3600)
-/*
-@RestController
-public class FileUploadController {
-    @Value("${file.upload-dir}")
-    String FILE_DIRECTORY;
-
-    @PostMapping("/uploadFile")
-    public ResponseEntity<Object> fileUpload(@RequestParam("File")MultipartFile file) throws IOException {
-        File myFile = new File(FILE_DIRECTORY+file.getOriginalFilename());
-        myFile.createNewFile();
-        FileOutputStream fos=new FileOutputStream(myFile);
-        fos.write(file.getBytes());
-        fos.close();
-        return new ResponseEntity<Object>("The file uploaded successfully", HttpStatus.OK);
-    }} */
 
 @RestController
 @RequestMapping("document")
@@ -58,6 +39,9 @@ public class FileUploadController {
     public DocumentRepository documentRepository;
 
     @Autowired
+    public TagRepository tagRepository;
+
+    @Autowired
     JavaMailSender javaMailSender;
 
     /*@PostMapping("/upload")
@@ -67,12 +51,35 @@ public class FileUploadController {
     }*/
 
     @PostMapping("/upload")
-   // public  ResponseEntity<?> uploadMultipleFiles(@RequestParam("files") MultipartFile[] files,@RequestParam("username") String username) {
-        public  ResponseEntity<?> uploadMultipleFiles(@RequestParam("files") MultipartFile[] files) {
-            for (MultipartFile file: files) {
-            documentServices.saveFile(file);}
+       // public  ResponseEntity<?> uploadMultipleFiles(@RequestParam("files") MultipartFile[] files, @RequestParam("tags") Set<Tag> tags, @RequestParam("dep") Set<Departement> dep) {
+     public  ResponseEntity<?> uploadMultipleFiles(@RequestParam("files") MultipartFile[] files, @RequestParam("tags") Set<String> tags, @RequestParam("dep") String dep) {
 
-        return ResponseEntity.ok(new MessageResponse("fichier ajouté avec succée!"));
+        for (MultipartFile file : files) {
+            //  if (documentRepository.existsByTitre(file.getOriginalFilename())
+            List<Document> t=documentRepository.findAllByTitre(file.getOriginalFilename());
+                if(t!=null)
+                 {for(Document doc:t){
+                    if (doc.getDepartements().equals(dep))
+                    //   && documentRepository.findByDepartements(dep) != null)
+                    {
+                    System.out.println("Nom du fichier " + file.getOriginalFilename() + " existe déja " +
+                            "dans le departement " + dep);
+                    return ResponseEntity
+                            .badRequest()
+                            .body(new MessageResponse("Nom du fichier " + file.getOriginalFilename() + " existe déja" +
+                                    "dans le departement " + dep));
+                }
+            }}
+
+            if (documentServices.saveFile(file, tags, dep) != null) {
+                return ResponseEntity.ok(new MessageResponse("fichier(s) ajouté(s) avec succée!"));
+
+            } else {
+                return ResponseEntity.badRequest()
+                        .body(new MessageResponse("Une ereure est servenue"));
+            }
+        }
+        return ResponseEntity.ok(new MessageResponse(""));
     }
 
     @GetMapping("/{id}")
@@ -98,9 +105,14 @@ public class FileUploadController {
 
     @PutMapping("/update/{id}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    /*public ResponseEntity<Document> updateDoc(@PathVariable(value = "id") Long docId,
+                                              @RequestBody DocRequest docRequest,
+                                              @RequestParam(value="tags") Set<String> tags) throws ResourceNotFoundException {
+        return documentServices.updateDoc(docId,docRequest,tags);}*/
     public ResponseEntity<Document> updateDoc(@PathVariable(value = "id") Long docId,
-                                              @RequestBody DocRequest docRequest) throws ResourceNotFoundException {
-        return documentServices.updateDoc(docId,docRequest);}
+                    @RequestParam(value="titre") String titre,@RequestParam(value="dep") String dep,
+                                              @RequestParam(value="tags") Set<String> tags) throws ResourceNotFoundException {
+        return documentServices.updateDoc(docId,titre,dep,tags);}
 
     @GetMapping("/download/{id:.+}")
     public ResponseEntity<Resource> downloadFile(@PathVariable Long id, HttpServletRequest request) {
@@ -113,7 +125,10 @@ public class FileUploadController {
                 .body(new ByteArrayResource(document.getData()));
     }
 
-
+    @GetMapping("/tags")
+    public ResponseEntity<List<Tag>> getTags(){
+        return new ResponseEntity<>(tagRepository.findAll(),HttpStatus.OK);
+    }
 
     }
     

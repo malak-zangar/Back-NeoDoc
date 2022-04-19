@@ -1,14 +1,14 @@
 package com.example.backneodoc.security.services;
 
+import com.example.backneodoc.models.Document;
+import com.example.backneodoc.models.Tag;
 import com.example.backneodoc.models.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class UserDetailsImpl implements UserDetails {
@@ -30,6 +30,8 @@ public class UserDetailsImpl implements UserDetails {
     private Boolean enabled;
 
     private String poste;
+
+    private Set<Document> doc_favoris = new HashSet<>();
 
     private Collection<? extends GrantedAuthority> authorities;
 
@@ -56,6 +58,21 @@ public class UserDetailsImpl implements UserDetails {
 
     }
 
+    public UserDetailsImpl(Long id, String username,String firstname,String lastname, String email, String password,Boolean enabled,String poste,
+                           Set<Document> doc_favoris,Collection<? extends GrantedAuthority> authorities) {
+        this.id = id;
+        this.username = username;
+        this.firstname=firstname;
+        this.lastname=lastname;
+        this.email = email;
+        this.password = password;
+        this.enabled=enabled;
+        this.poste=poste;
+        this.doc_favoris=doc_favoris;
+        this.authorities = authorities;
+
+    }
+
     public static UserDetailsImpl build(User user) {
         List<GrantedAuthority> authorities = user.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority(role.getName().name()))
@@ -70,6 +87,7 @@ public class UserDetailsImpl implements UserDetails {
                 user.getPassword(),
                 user.getEnabled(),
                 user.getPoste(),
+                user.getDoc_favoris(),
                 authorities);
     }
 
@@ -108,6 +126,8 @@ public class UserDetailsImpl implements UserDetails {
 
     public String getPoste(){return poste;}
 
+    public Set<Document> getDoc_favoris(){ return doc_favoris;}
+
     @Override
     public boolean isAccountNonExpired() {
         return true;
@@ -127,6 +147,7 @@ public class UserDetailsImpl implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
 
 
     @Override

@@ -87,6 +87,7 @@ public class AuthController{
                 userDetails.getEmail(),
                 userDetails.getEnabled(),
                 userDetails.getPoste(),
+                userDetails.getDoc_favoris(),
                 roles));
     }
 

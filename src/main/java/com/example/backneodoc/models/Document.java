@@ -14,9 +14,6 @@ public class Document {
     @Column(name = "titre", nullable = false)
     private String titre;
 
-    @Column(name = "URL")
-    private String url;
-
     @Column(name = "type", nullable = false)
     private String type;
 
@@ -29,27 +26,29 @@ public class Document {
 
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(name = "doc_tag", joinColumns = { @JoinColumn(name = "post_id") }, inverseJoinColumns = { @JoinColumn(name = "tag_id") })
+    @JoinTable(name = "doc_tag", joinColumns = { @JoinColumn(name = "doc_id") }, inverseJoinColumns = { @JoinColumn(name = "tag_id") })
     private Set<Tag> tags = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    /*@ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "doc_dep", joinColumns = { @JoinColumn(name = "id_doc") }, inverseJoinColumns = { @JoinColumn(name = "id_dep") })
-    private Set<Departement> departements = new HashSet<>();
+    private Set<Departement> departements = new HashSet<>();*/
+
+    @Column(name = "departement", nullable = false)
+    private String departements ;
 
     public Document() {
     }
 
-    public Document(String titre,String url , String type , byte[] data) {
+    public Document(String titre, String type , byte[] data) {
         this.titre = titre;
-        this.url=url;
         this.type=type;
         this.data=data;
     }
 
-    public Document(String titre, String url, String type, Set<Tag> tags,Set<Departement> dep) {
+    public Document(String titre, String type, byte[] data, Set<Tag> tags,String dep) {
         this.titre = titre;
-        this.url = url;
         this.type = type;
+        this.data=data;
         this.tags = tags;
         this.departements=dep;
     }
@@ -62,14 +61,18 @@ public class Document {
 
     public void setType(String type) {this.type = type;}
 
-    public String getUrl() {return url;}
-
-    public void setUrl(String url) {this.url = url;}
 
     public String getTitre() {return titre;}
 
     public void setTitre(String titre) {this.titre = titre;}
 
+    public String getDepartements() {
+        return departements;
+    }
+
+    public void setDepartements(String departements) {
+        this.departements = departements;
+    }
 
     public Set<Tag> getTags() {return tags;}
 
@@ -79,9 +82,9 @@ public class Document {
 
     public void setData(byte[] data) {this.data = data;}
 
-    public Set<Departement> getDepartements() {return departements;}
+   // public Set<Departement> getDepartements() {return departements;}
 
-    public void setDepartements(Set<Departement> departements) {this.departements = departements;}
+   // public void setDepartements(Set<Departement> departements) {this.departements = departements;}
 /*
     public Set<User> getFavoris() {
         return favoris;

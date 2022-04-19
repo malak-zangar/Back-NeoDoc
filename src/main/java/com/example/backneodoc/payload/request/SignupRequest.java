@@ -1,9 +1,12 @@
 package com.example.backneodoc.payload.request;
 
+import com.example.backneodoc.models.Document;
+
 import javax.persistence.Column;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.util.HashSet;
 import java.util.Set;
 
 public class SignupRequest {
@@ -35,6 +38,17 @@ public class SignupRequest {
     private String poste;
 
     private Boolean enabled=false;
+
+    private Set<Document> favoriteFiles = new HashSet<>();
+
+
+    public Set<Document> getFavoriteFiles() {
+        return favoriteFiles;
+    }
+
+    public void setFavoriteFiles(Set<Document> favoriteFiles) {
+        this.favoriteFiles = favoriteFiles;
+    }
 
     public String getFirstname() {
         return firstname;

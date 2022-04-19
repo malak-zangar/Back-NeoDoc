@@ -1,6 +1,5 @@
 package com.example.backneodoc.payload.request;
 
-import com.example.backneodoc.models.Departement;
 import com.example.backneodoc.models.Tag;
 
 import javax.validation.constraints.NotBlank;
@@ -12,20 +11,24 @@ public class DocRequest {
     private String titre;
 
     @NotBlank
-    private Set<Tag> tag;
+    private Set<String> tag;
 
     @NotBlank
-    private Set<Departement> dep;
+    private String dep;
 
     public String getTitre() {return titre;}
 
     public void setTitre(String titre) {this.titre = titre;}
 
-    public Set<Tag> getTag() {return tag;}
+    public Set<String> getTag() {return tag;}
 
-    public void setTag(Set<Tag> tag) {this.tag = tag;}
+    public void setTag(Set<String> tag) {this.tag = tag;}
 
-    public Set<Departement> getDep() {return dep;}
+    public String getDep() {
+        return dep;
+    }
 
-    public void setDep(Set<Departement> dep) {this.dep = dep;}
+    public void setDep(String dep) {
+        this.dep = dep;
+    }
 }
