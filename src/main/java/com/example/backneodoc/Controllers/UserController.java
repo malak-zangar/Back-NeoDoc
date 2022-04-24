@@ -1,13 +1,16 @@
 package com.example.backneodoc.Controllers;
 
 import com.example.backneodoc.Exceptions.ResourceNotFoundException;
+import com.example.backneodoc.models.Document;
 import com.example.backneodoc.models.ERole;
 import com.example.backneodoc.models.Role;
 import com.example.backneodoc.models.User;
 import com.example.backneodoc.payload.request.SignupRequest;
 import com.example.backneodoc.payload.response.MessageResponse;
+import com.example.backneodoc.repository.DocumentRepository;
 import com.example.backneodoc.repository.RoleRepository;
 import com.example.backneodoc.repository.UserRepository;
+import com.example.backneodoc.services.DocumentServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.Query;
@@ -34,6 +37,12 @@ public class UserController {
 
     @Autowired
     PasswordEncoder encoder;
+
+    @Autowired
+    DocumentRepository documentRepository;
+
+    @Autowired
+    DocumentServices documentServices;
 
     @GetMapping("/users/enattente")
     public List<User> getAllEnAttente() {
@@ -151,4 +160,6 @@ public class UserController {
         response.put("accepté", Boolean.TRUE);
         return response;
     }
+
+
 }

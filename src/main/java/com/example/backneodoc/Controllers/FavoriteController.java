@@ -1,5 +1,6 @@
 package com.example.backneodoc.Controllers;
 
+import com.example.backneodoc.Exceptions.ResourceNotFoundException;
 import com.example.backneodoc.models.Document;
 import com.example.backneodoc.models.User;
 import com.example.backneodoc.payload.request.SignupRequest;
@@ -41,16 +42,19 @@ public class FavoriteController {
         return ResponseEntity.ok(new MessageResponse("fav ajouté avec succée!"));
     }
 
-    @PutMapping("/doc/{userId}")
-    public ResponseEntity<?> addToFavo(@PathVariable(value = "userId") Long userId , @RequestBody Set<Document> fav) {
-        System.out.println("hiiii put");
-        User user = userRepository.findById(userId).orElse(null);
-        Set<Document> Fav =user.getDoc_favoris();
-        Fav=fav;
-        user.setDoc_favoris(Fav);
+    @PutMapping("/addtofav/{idu}/{idd}")
+    public ResponseEntity<User> addtofavo(@PathVariable(value = "idu") Long idu,@PathVariable(value = "idd") Long idd, @RequestParam(value="doc") Long docid
+    ) throws ResourceNotFoundException {
+        Document document = docRepository.findById(docid)
+                .orElseThrow(() -> new ResourceNotFoundException("document non trouvé pour cet id: " + docid));
+        User user = userRepository.findById(idu)
+                .orElseThrow(() -> new ResourceNotFoundException("Utilisateur non trouvé pour cet id: " + idu));
+        Set<Document> nfav=user.getDoc_favoris();
+        nfav.add(document);
+        user.setDoc_favoris(nfav);
 
-        userRepository.save(user);
-        return ResponseEntity.ok(new MessageResponse("fav ajouté avec succée!"));
+        final User updatedUser = userRepository.save(user);
+        return ResponseEntity.ok(updatedUser);
     }
 
     @DeleteMapping("/doc/{userId}/{docId}")

@@ -68,7 +68,7 @@ public class DocumentServices {
             doc = new Document(docname, file.getContentType(), file.getBytes(),stag,dep);
             Document doc1=documentRepository.save(doc);
             SimpleMailMessage mailMessage = new SimpleMailMessage();
-            mailMessage.setTo("maleeqzangar@gmail.com");
+            mailMessage.setTo("malak.zangar@neoxam.com");
             mailMessage.setSubject("Ajout d'un nouveau document");
             mailMessage.setFrom("malak.zangar@etudiant-isi.utm.tn");
             mailMessage.setText("L'employé ' " + userDetails.getUsername() +" ' a ajouté un nouveau document intitulé ' " + docname + " ' dans le département " +dep);
@@ -141,5 +141,7 @@ public class DocumentServices {
         final Document updatedDoc = documentRepository.save(document);
         return ResponseEntity.ok(updatedDoc);
     }
+
+
 }
 

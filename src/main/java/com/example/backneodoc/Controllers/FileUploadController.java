@@ -44,15 +44,10 @@ public class FileUploadController {
     @Autowired
     JavaMailSender javaMailSender;
 
-    /*@PostMapping("/upload")
-    public Document uploadFile(@RequestParam("document") MultipartFile file) throws IOException {
-
-       return documentServices.store(file);
-    }*/
-
     @PostMapping("/upload")
        // public  ResponseEntity<?> uploadMultipleFiles(@RequestParam("files") MultipartFile[] files, @RequestParam("tags") Set<Tag> tags, @RequestParam("dep") Set<Departement> dep) {
-     public  ResponseEntity<?> uploadMultipleFiles(@RequestParam("files") MultipartFile[] files, @RequestParam("tags") Set<String> tags, @RequestParam("dep") String dep) {
+     public  ResponseEntity<?> uploadMultipleFiles(@RequestParam("files") MultipartFile[] files,
+                                                   @RequestParam("tags") Set<String> tags, @RequestParam("dep") String dep) {
 
         for (MultipartFile file : files) {
             //  if (documentRepository.existsByTitre(file.getOriginalFilename())
