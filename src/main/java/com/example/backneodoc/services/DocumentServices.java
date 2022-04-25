@@ -142,6 +142,21 @@ public class DocumentServices {
         return ResponseEntity.ok(updatedDoc);
     }
 
+    public List<Document> getSearchDocTitre(String titre){
+     //   return documentRepository.searchDocumentByTitreContaining(titre);
+        return documentRepository.findByTitreContaining(titre);
+    }
+    public List<Document> getSearchDocDep(String dep){
+        return documentRepository.searchDocumentByDepartementsIsContaining(dep);
+    }
+    public List<Document> getSearchDocType(String type){
+        return documentRepository.searchDocumentByTypeIsContaining(type);
+    }
+    public List<Document> getSearchDocTag(String tag){
+        return documentRepository.searchDocumentByTagsIsContaining(tag);
+    }
+
+
 
 }
 

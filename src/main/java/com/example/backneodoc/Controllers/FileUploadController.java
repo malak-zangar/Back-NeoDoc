@@ -78,7 +78,6 @@ public class FileUploadController {
     }
 
     @PutMapping("/update/{id}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     /*public ResponseEntity<Document> updateDoc(@PathVariable(value = "id") Long docId,
                                               @RequestBody DocRequest docRequest,
                                               @RequestParam(value="tags") Set<String> tags) throws ResourceNotFoundException {
@@ -125,7 +124,24 @@ public class FileUploadController {
         return new ResponseEntity<>(tagRepository.findAll(),HttpStatus.OK);
     }
 
+    @GetMapping("/recherche/type/{type}")
+    public List<Document> getDocumentByType( @PathVariable(value="type") String type) {
+        return documentServices.getSearchDocType(type);
     }
+    @GetMapping("/recherche/titre/{titre}")
+    public List<Document> getDocumentByTitre( @PathVariable(value="titre") String titre) {
+        return documentServices.getSearchDocTitre(titre);
+    }
+    @GetMapping("/recherche/tag/{tag}")
+    public List<Document> getDocumentByTag(@PathVariable(value="tag") String tag) {
+        return documentServices.getSearchDocTag(tag);
+    }
+    @GetMapping("/recherche/dep/{dep}")
+    public List<Document> getDocumentByDep(@PathVariable(value="dep") String dep) {
+        return documentServices.getSearchDocDep(dep);
+    }
+
+}
     
 
 
