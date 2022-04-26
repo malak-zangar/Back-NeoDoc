@@ -78,10 +78,6 @@ public class FileUploadController {
     }
 
     @PutMapping("/update/{id}")
-    /*public ResponseEntity<Document> updateDoc(@PathVariable(value = "id") Long docId,
-                                              @RequestBody DocRequest docRequest,
-                                              @RequestParam(value="tags") Set<String> tags) throws ResourceNotFoundException {
-        return documentServices.updateDoc(docId,docRequest,tags);}*/
     public ResponseEntity<Document> updateDoc(@PathVariable(value = "id") Long docId,
                                               @RequestParam(value="titre") String titre,@RequestParam(value="dep") String dep,
                                               @RequestParam(value="tags") Set<String> tags) throws ResourceNotFoundException {

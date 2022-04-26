@@ -3,11 +3,15 @@ package com.example.backneodoc.services;
 import com.example.backneodoc.Exceptions.ResourceNotFoundException;
 import com.example.backneodoc.models.Document;
 import com.example.backneodoc.models.Tag;
+import com.example.backneodoc.models.User;
 import com.example.backneodoc.payload.request.DocRequest;
 import com.example.backneodoc.payload.response.MessageResponse;
 import com.example.backneodoc.repository.DocumentRepository;
 import com.example.backneodoc.repository.TagRepository;
+import com.example.backneodoc.repository.UserRepository;
 import com.example.backneodoc.security.services.UserDetailsImpl;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +38,9 @@ public class DocumentServices {
 
     @Autowired
     TagRepository tagRepository;
+
+    @Autowired
+    UserRepository userRepository;
 
     @Autowired
     JavaMailSender javaMailSender;
@@ -98,10 +105,15 @@ public class DocumentServices {
         return documentRepository.findAll(Sort.by(Sort.Direction.ASC, "type","titre"));
     }
 
-    public Map<String, Boolean> deleteDoc(@PathVariable(value = "id") Long docId)
-            throws ResourceNotFoundException {
+    public Map<String, Boolean> deleteDoc(@PathVariable(value = "id") Long docId) throws ResourceNotFoundException {
         Document document = documentRepository.findById(docId)
                 .orElseThrow(() -> new ResourceNotFoundException("Document non trouvé pour cet id:: " + docId));
+        List<User> users=userRepository.searchUserByFav(document.getId());
+        for(User user:users){
+            Set<Document> fav = user.getDoc_favoris();
+            fav.remove(document);
+            user.setDoc_favoris(fav);
+        }
         documentRepository.delete(document);
         Map<String, Boolean> response = new HashMap<>();
         response.put("supprimé", Boolean.TRUE);
@@ -147,13 +159,13 @@ public class DocumentServices {
         return documentRepository.findByTitreContaining(titre);
     }
     public List<Document> getSearchDocDep(String dep){
-        return documentRepository.searchDocumentByDepartementsIsContaining(dep);
+        return documentRepository.findByDepartementsContaining(dep);
     }
     public List<Document> getSearchDocType(String type){
-        return documentRepository.searchDocumentByTypeIsContaining(type);
+        return documentRepository.findByTypeContaining(type);
     }
     public List<Document> getSearchDocTag(String tag){
-        return documentRepository.searchDocumentByTagsIsContaining(tag);
+        return documentRepository.searchDocumentByTags(tag);
     }
 
 

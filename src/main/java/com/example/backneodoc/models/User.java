@@ -1,5 +1,8 @@
 package com.example.backneodoc.models;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -62,7 +65,6 @@ public class User {
     @JoinTable(name = "favoris",
             joinColumns = { @JoinColumn(name = "id_user") },
             inverseJoinColumns = { @JoinColumn(name = "id_document") })
-
     private Set<Document> doc_favoris = new HashSet<>();
 
 

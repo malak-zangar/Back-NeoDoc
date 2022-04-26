@@ -21,8 +21,8 @@ public class Document {
     @Column(name = "data", nullable = false)
     private byte[] data;
 
-    //@ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE},mappedBy ="doc_favoris" )
-    //private Set<User> favoris = new HashSet<>();
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE},mappedBy ="doc_favoris" )
+    private Set<User> favoris = new HashSet<>();
 
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
