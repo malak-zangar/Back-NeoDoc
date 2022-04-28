@@ -32,7 +32,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findById(Long id);
 
-    @Query(value= "DELETE FROM favoris WHERE favoris.id_user = ?1 AND favoris.id_document = ?2",nativeQuery=true)
-    void delete(Long idu,Long idd);
 
 }

@@ -1,7 +1,6 @@
 package com.example.backneodoc.Controllers;
 
 import com.example.backneodoc.Exceptions.ResourceNotFoundException;
-import com.example.backneodoc.models.Document;
 import com.example.backneodoc.models.ERole;
 import com.example.backneodoc.models.Role;
 import com.example.backneodoc.models.User;
@@ -13,15 +12,12 @@ import com.example.backneodoc.repository.UserRepository;
 import com.example.backneodoc.services.DocumentServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.validation.Valid;
 import java.util.*;
-
-import static org.springframework.data.domain.Sort.Direction.ASC;
 
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -120,18 +116,61 @@ public class UserController {
 
 
     @PutMapping("/users/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable(value = "id") Long userId,
+    /*public ResponseEntity<User> updateUser(@PathVariable(value = "id") Long userId,
                                            @RequestBody SignupRequest signupRequest) throws ResourceNotFoundException {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Utilisateur non trouvé pour cet id: " + userId));
 
-     /* user.setEmail(signupRequest.getEmail());
+      user.setEmail(signupRequest.getEmail());
         user.setLastname(signupRequest.getLastname());
         user.setFirstname(signupRequest.getFirstname());
         user.setUsername(signupRequest.getUsername());
-        user.setEnabled(signupRequest.getEnabled()); */
+        user.setEnabled(signupRequest.getEnabled());
 
         user.setPoste(signupRequest.getPoste());
+
+        final User updatedUser = userRepository.save(user);
+        return ResponseEntity.ok(updatedUser);
+    }*/
+    public ResponseEntity<User> updateUser(@PathVariable(value = "id") Long userId,
+                                           @RequestBody SignupRequest signupRequest
+                                           ) throws ResourceNotFoundException {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Utilisateur non trouvé pour cet id: " + userId));
+System.out.println(user.getRoles());
+        user.setEmail(signupRequest.getEmail());
+        user.setLastname(signupRequest.getLastname());
+        user.setFirstname(signupRequest.getFirstname());
+        user.setUsername(signupRequest.getUsername());
+        user.setEnabled(true);
+        user.setPoste(signupRequest.getPoste());
+
+        Set<String> strRoles = signupRequest.getRole();
+        Set<Role> roles = new HashSet<>();
+
+        if (strRoles == null) {
+
+            for(Role r:user.getRoles()){
+            roles.add(r);
+            System.out.println("majashy");}
+        } else {
+            strRoles.forEach(role -> {
+                switch (role) {
+                    case "user":
+                        Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+                                .orElseThrow(() -> new RuntimeException("Erreur: Role n'existe pas."));
+                        roles.add(userRole);
+                        break;
+
+                    case "admin":
+                        Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+                                .orElseThrow(() -> new RuntimeException("Erreur: Role n'existe pas."));
+                        roles.add(adminRole);
+                }
+            });}
+        user.setRoles(roles);
+System.out.println(signupRequest.getRole());
+
 
         final User updatedUser = userRepository.save(user);
         return ResponseEntity.ok(updatedUser);

@@ -73,8 +73,12 @@ public class DocumentServices {
                 }
             }
             doc = new Document(docname, file.getContentType(), file.getBytes(),stag,dep);
-            Document doc1=documentRepository.save(doc);
-            SimpleMailMessage mailMessage = new SimpleMailMessage();
+                System.out.println("doc tekhdha");
+
+                Document doc1=documentRepository.save(doc);
+                System.out.println("doc tsava");
+
+                SimpleMailMessage mailMessage = new SimpleMailMessage();
             mailMessage.setTo("malak.zangar@neoxam.com");
             mailMessage.setSubject("Ajout d'un nouveau document");
             mailMessage.setFrom("malak.zangar@etudiant-isi.utm.tn");
@@ -167,7 +171,9 @@ public class DocumentServices {
     public List<Document> getSearchDocTag(String tag){
         return documentRepository.searchDocumentByTags(tag);
     }
-
+    public List<Document> getbyDep(String dep){
+        return documentRepository.findByDepartements(dep);
+    }
 
 
 }

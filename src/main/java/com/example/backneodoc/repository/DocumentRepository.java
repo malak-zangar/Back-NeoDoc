@@ -25,12 +25,12 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
     List<Document> findByDepartementsContaining(String dep);
     List<Document> findByTypeContaining(String dep);
     List<Document> findByTagsContaining(String dep);
-
+    List<Document> findByDepartements(String dep);
     Optional<Document> findById(Long id);
 
     Boolean existsByTitre(String titre);
 
-    Document findByDepartements(String dep);
+   // Document findByDepartements(String dep);
     List<Document> searchDocumentByTitreIsContaining(String titre);
     List<Document> searchDocumentByDepartementsIsContaining(String dep);
     List<Document> searchDocumentByTypeIsContaining(String type);

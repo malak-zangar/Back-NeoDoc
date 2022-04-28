@@ -45,30 +45,24 @@ public class FileUploadController {
     JavaMailSender javaMailSender;
 
     @PostMapping("/upload")
-       // public  ResponseEntity<?> uploadMultipleFiles(@RequestParam("files") MultipartFile[] files, @RequestParam("tags") Set<Tag> tags, @RequestParam("dep") Set<Departement> dep) {
      public  ResponseEntity<?> uploadMultipleFiles(@RequestParam("files") MultipartFile[] files,
                                                    @RequestParam("tags") Set<String> tags, @RequestParam("dep") String dep) {
 
         for (MultipartFile file : files) {
-            //  if (documentRepository.existsByTitre(file.getOriginalFilename())
             List<Document> t=documentRepository.findAllByTitre(file.getOriginalFilename());
                 if(t!=null)
                  {for(Document doc:t){
                     if (doc.getDepartements().equals(dep))
-                    //   && documentRepository.findByDepartements(dep) != null)
                     {
-                    System.out.println("Nom du fichier " + file.getOriginalFilename() + " existe déja " +
-                            "dans le departement " + dep);
+                    System.out.println("Nom du fichier " + file.getOriginalFilename() + " existe déja " + "dans le departement " + dep);
                     return ResponseEntity
                             .badRequest()
                             .body(new MessageResponse("Nom du fichier " + file.getOriginalFilename() + " existe déja" +
                                     "dans le departement " + dep));
-                }
-            }}
+                }}}
 
             if (documentServices.saveFile(file, tags, dep) != null) {
                 return ResponseEntity.ok(new MessageResponse("fichier(s) ajouté(s) avec succée!"));
-
             } else {
                 return ResponseEntity.badRequest()
                         .body(new MessageResponse("Une ereure est servenue"));
@@ -135,6 +129,10 @@ public class FileUploadController {
     @GetMapping("/recherche/dep/{dep}")
     public List<Document> getDocumentByDep(@PathVariable(value="dep") String dep) {
         return documentServices.getSearchDocDep(dep);
+    }
+    @GetMapping("/getAll/inDep/{dep}")
+    public List<Document> getAllByDep(@PathVariable(value="dep") String dep) {
+        return documentServices.getbyDep(dep);
     }
 
 }
