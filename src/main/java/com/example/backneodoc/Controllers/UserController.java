@@ -200,5 +200,16 @@ System.out.println(signupRequest.getRole());
         return response;
     }
 
+    @PutMapping("/users/accept/all")
+    public Map<String, Boolean> acceptAllUsers() {
+        List<User> users = getAllEnAttente();
+        for(User user:users){
+            user.setEnabled(true);
+            userRepository.save(user);}
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("accepté", Boolean.TRUE);
+        return response;
+    }
+
 
 }

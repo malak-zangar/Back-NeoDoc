@@ -1,12 +1,11 @@
 package com.example.backneodoc.services;
 
 import com.example.backneodoc.Exceptions.ResourceNotFoundException;
-import com.example.backneodoc.models.Document;
-import com.example.backneodoc.models.Tag;
-import com.example.backneodoc.models.User;
+import com.example.backneodoc.models.*;
 import com.example.backneodoc.payload.request.DocRequest;
 import com.example.backneodoc.payload.response.MessageResponse;
 import com.example.backneodoc.repository.DocumentRepository;
+import com.example.backneodoc.repository.RoleRepository;
 import com.example.backneodoc.repository.TagRepository;
 import com.example.backneodoc.repository.UserRepository;
 import com.example.backneodoc.security.services.UserDetailsImpl;
@@ -45,13 +44,14 @@ public class DocumentServices {
     @Autowired
     JavaMailSender javaMailSender;
 
-    public Document store(MultipartFile file) throws IOException {
+    @Autowired
+    RoleRepository roleRepository;
+
+    /*public Document store(MultipartFile file) throws IOException {
         String filename=file.getOriginalFilename();
         Document document=new Document(filename,file.getContentType(),file.getBytes());
         return documentRepository.save(document);
-    }
-
-      //  public Document saveFile(MultipartFile file, Set<Tag> tags, Set<Departement> dep) {
+    }*/
 
     public Document saveFile(MultipartFile file, Set<String> tags, String dep) {
             Set<Tag> stag= new HashSet<>();
@@ -61,6 +61,7 @@ public class DocumentServices {
             try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+            String owner=userDetails.getUsername();
             for ( String tag : tags) {
                 System.out.println("hello");
                 if (tagRepository.findByLibelle(tag) != null) {
@@ -72,18 +73,28 @@ public class DocumentServices {
                     stag.add(ntag);
                 }
             }
-            doc = new Document(docname, file.getContentType(), file.getBytes(),stag,dep);
+            doc = new Document(docname, file.getContentType(), file.getBytes(),stag,dep,owner);
                 System.out.println("doc tekhdha");
 
                 Document doc1=documentRepository.save(doc);
                 System.out.println("doc tsava");
 
-                SimpleMailMessage mailMessage = new SimpleMailMessage();
-            mailMessage.setTo("malak.zangar@neoxam.com");
-            mailMessage.setSubject("Ajout d'un nouveau document");
-            mailMessage.setFrom("malak.zangar@etudiant-isi.utm.tn");
-            mailMessage.setText("L'employé ' " + userDetails.getUsername() +" ' a ajouté un nouveau document intitulé ' " + docname + " ' dans le département " +dep);
-            javaMailSender.send(mailMessage);
+                Role admin = roleRepository.findByName(ERole.ROLE_ADMIN)
+                        .orElseThrow(() -> new RuntimeException("Erreur: Role n'existe pas."));
+                List<String> mails=userRepository.searchUserByRole(admin.getId().longValue());
+                for (String mail:mails){
+                    System.out.println(mail);
+                }
+                for (String mail:mails){
+                    System.out.println(mail);
+                    SimpleMailMessage mailMessage = new SimpleMailMessage();
+                    mailMessage.setTo(mail);
+                    mailMessage.setSubject("Ajout d'un nouveau document");
+                    mailMessage.setFrom("malak.zangar@etudiant-isi.utm.tn");
+                    mailMessage.setText("L'employé ' " + owner +" ' a ajouté un nouveau document intitulé ' " + docname + " ' dans le département " +dep);
+                    javaMailSender.send(mailMessage);
+                }
+
 
             return doc1;
 

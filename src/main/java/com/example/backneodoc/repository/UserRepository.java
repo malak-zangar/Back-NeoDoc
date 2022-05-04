@@ -30,6 +30,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query(value="select users.id,users.email,users.username,users.enabled,users.firstname,users.lastname,users.password,users.poste,users.token,users.token_creation_date,users.tokenCreationDate from users,document,favoris where document.id=?1 and users.id=favoris.id_user and document.id=favoris.id_document",nativeQuery=true)
     List<User> searchUserByFav(Long idd);
 
+    //@Query(value="select users.id,users.email,users.username,users.enabled,users.firstname,users.lastname,users.password,users.poste,users.token,users.token_creation_date,users.tokenCreationDate from users,roles,user_roles where roles.id=?1 and users.id=user_roles.user_id and roles.id=user_roles.role_id",nativeQuery=true)
+    @Query(value="select users.email from users,roles,user_roles where roles.id=?1 and users.id=user_roles.user_id and roles.id=user_roles.role_id",nativeQuery=true)
+    List<String> searchUserByRole(Long idr);
+
     Optional<User> findById(Long id);
 
 

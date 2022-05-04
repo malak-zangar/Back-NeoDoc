@@ -17,6 +17,9 @@ public class Document {
     @Column(name = "type", nullable = false)
     private String type;
 
+    @Column(name = "owner", nullable = false)
+    private String owner;
+
     @Lob
     @Column(name = "data", nullable = false)
     private byte[] data;
@@ -45,12 +48,21 @@ public class Document {
         this.data=data;
     }
 
-    public Document(String titre, String type, byte[] data, Set<Tag> tags,String dep) {
+   /* public Document(String titre, String type, byte[] data, Set<Tag> tags,String dep) {
         this.titre = titre;
         this.type = type;
         this.data=data;
         this.tags = tags;
         this.departements=dep;
+    }*/
+
+    public Document(String titre, String type, byte[] data, Set<Tag> tags,String dep,String owner) {
+        this.titre = titre;
+        this.type = type;
+        this.data=data;
+        this.tags = tags;
+        this.departements=dep;
+        this.owner=owner;
     }
 
     public Long getId() {return id;}
@@ -82,7 +94,15 @@ public class Document {
 
     public void setData(byte[] data) {this.data = data;}
 
-   // public Set<Departement> getDepartements() {return departements;}
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
+
+    // public Set<Departement> getDepartements() {return departements;}
 
    // public void setDepartements(Set<Departement> departements) {this.departements = departements;}
 /*
