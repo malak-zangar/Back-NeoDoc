@@ -37,7 +37,7 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
     List<Document> searchDocumentByTagsIsContaining(String tag);
 
 
-    @Query(value="select document.id,document.data,document.titre,document.type,document.departement from document,tags,doc_tag where tags.libelle=?1 and tags.id=doc_tag.tag_id and document.id=doc_tag.doc_id",nativeQuery=true)
+    @Query(value="select document.id,document.data,document.titre,document.type,document.departement,document.owner from document,tags,doc_tag where tags.libelle=?1 and tags.id=doc_tag.tag_id and document.id=doc_tag.doc_id",nativeQuery=true)
             List<Document> searchDocumentByTags(String libelle);
 
 
