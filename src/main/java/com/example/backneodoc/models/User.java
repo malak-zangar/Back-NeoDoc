@@ -1,5 +1,6 @@
 package com.example.backneodoc.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -65,6 +66,7 @@ public class User {
     @JoinTable(name = "favoris",
             joinColumns = { @JoinColumn(name = "id_user") },
             inverseJoinColumns = { @JoinColumn(name = "id_document") })
+    @JsonIgnoreProperties("favoris")
     private Set<Document> doc_favoris = new HashSet<>();
 
 

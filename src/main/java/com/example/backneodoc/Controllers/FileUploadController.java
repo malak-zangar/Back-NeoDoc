@@ -6,9 +6,12 @@ import com.example.backneodoc.models.Tag;
 import com.example.backneodoc.payload.response.MessageResponse;
 import com.example.backneodoc.repository.DocumentRepository;
 import com.example.backneodoc.repository.TagRepository;
+import com.example.backneodoc.security.services.UserDetailsImpl;
 import com.example.backneodoc.services.DocumentServices;
+import com.example.backneodoc.services.VideoStreamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -16,15 +19,19 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+
+import static com.example.backneodoc.constants.ApplicationConstants.VIDEO;
 
 @CrossOrigin(origins="*",maxAge = 3600)
 
@@ -44,63 +51,19 @@ public class FileUploadController {
     @Autowired
     JavaMailSender javaMailSender;
 
-    @PostMapping("/upload")
-     public  ResponseEntity<?> uploadMultipleFiles(@RequestParam("files") MultipartFile[] files,
-                                                   @RequestParam("tags") Set<String> tags, @RequestParam("dep") String dep) {
+    @Autowired
+    VideoStreamService videoStreamService;
 
-        for (MultipartFile file : files) {
-            List<Document> t=documentRepository.findAllByTitre(file.getOriginalFilename());
-                if(t!=null)
-                 {for(Document doc:t){
-                    if (doc.getDepartements().equals(dep))
-                    {
-                    System.out.println("Nom du fichier " + file.getOriginalFilename() + " existe déja " + "dans le departement " + dep);
-                    return ResponseEntity
-                            .badRequest()
-                            .body(new MessageResponse("Nom du fichier " + file.getOriginalFilename() + " existe déja" +
-                                    "dans le departement " + dep));
-                }}}
-
-            if (documentServices.saveFile(file, tags, dep) != null) {
-                return ResponseEntity.ok(new MessageResponse("fichier(s) ajouté(s) avec succée!"));
-            } else {
-                return ResponseEntity.badRequest()
-                        .body(new MessageResponse("Une ereure est servenue"));
-            }
-        }
-        return ResponseEntity.ok(new MessageResponse(""));
+    @PostMapping(path = "/upload")
+    public ResponseEntity<?> uploadMultipleFiles(@RequestParam("files")  MultipartFile[] uploadedFiles, @RequestParam("tags") Set<String> tags, @RequestParam("dep")  String dep) {
+       System.out.println("hello");
+        documentServices.saveMultiple(uploadedFiles,tags, dep);
+        return ResponseEntity.ok(new MessageResponse("success"));
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<Document> updateDoc(@PathVariable(value = "id") Long docId,
-                                              @RequestParam(value="titre") String titre,@RequestParam(value="dep") String dep,
-                                              @RequestParam(value="tags") Set<String> tags) throws ResourceNotFoundException {
-        return documentServices.updateDoc(docId,titre,dep,tags);}
-
-    @GetMapping("/download/{id:.+}")
-    public ResponseEntity<Resource> downloadFile(@PathVariable Long id, HttpServletRequest request) {
-        // Load file as Resource
-        Document document = documentServices.getDocById(id);
-
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(document.getType()))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + document.getTitre() + "\"")
-                .body(new ByteArrayResource(document.getData()));
-    }
-
-    @GetMapping("/{id}")
-    public Document getFile(@PathVariable Long id) throws IOException {
-        return documentServices.getDocById(id);
-    }
-
-    @GetMapping("/name/{name}")
-    public Document getFile(@PathVariable String name) throws IOException {
-        return documentServices.getDocByTitle(name);
-    }
-
-    @GetMapping("/list")
-    public List<Document> getDocumentList() {
-        return documentServices.getAllDoc();
+        @GetMapping("/list")
+    public ResponseEntity<List<Document>> getListFiles() {
+        return ResponseEntity.status(HttpStatus.OK).body(documentServices.getAllFiles());
     }
 
     @DeleteMapping("/delete/{id}")
@@ -108,9 +71,39 @@ public class FileUploadController {
         return documentServices.deleteDoc(userId);
     }
 
+    @GetMapping("/name/{name:.+}")
+    @ResponseBody
+    public ResponseEntity<Resource> getFile(@PathVariable String filename) {
+        Resource file = documentServices.load(filename);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename+  "\"").body(file);
+    }
+   
+
+    @GetMapping("/files/stream/{fileName}")
+    public ResponseEntity<byte[]> streamVideo(@RequestHeader(value = "Range", required = false) String httpRangeList,
+                                              @PathVariable("fileName") String fileName) {
+        return videoStreamService.prepareContent(fileName, httpRangeList);
+    }
+
+
     @GetMapping("/tags")
     public ResponseEntity<List<Tag>> getTags(){
         return new ResponseEntity<>(tagRepository.findAll(),HttpStatus.OK);
+    }
+
+    @GetMapping("/download/{id:.+}")
+    public ResponseEntity<Resource> downloadFile(@PathVariable Long id) throws IOException {
+        // Load file as Resource
+        Document document = documentServices.getDocById(id);
+        Path path = Paths.get(document.getPath());
+        ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
+
+        return ResponseEntity.ok()
+                .contentLength(document.getSize())
+                .contentType(MediaType.parseMediaType(document.getContentType()))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + document.getName() + "\"")
+                .body(resource);
     }
 
     @GetMapping("/recherche/type/{type}")
@@ -134,6 +127,17 @@ public class FileUploadController {
         return documentServices.getbyDep(dep);
     }
 
+    @PutMapping("/update/{id}")
+    public ResponseEntity<Document> updateDoc(@PathVariable(value = "id") Long docId,
+                                              @RequestParam(value="titre") String titre,@RequestParam(value="dep") String dep,
+                                              @RequestParam(value="tags") Set<String> tags) throws ResourceNotFoundException {
+        return documentServices.updateDoc(docId,titre,dep,tags);}
+
+
+    @GetMapping("/{id}")
+    public Document getFilebyid(@PathVariable Long id) throws IOException {
+        return documentServices.getDocById(id);
+    }
 }
     
 

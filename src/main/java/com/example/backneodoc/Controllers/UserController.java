@@ -58,10 +58,6 @@ public class UserController {
         return ResponseEntity.ok().body(user);
     }
 
-   /* @PostMapping("/users")
-    public User createUser(@Valid @RequestBody User user) {
-        return userRepository.save(user);
-    }*/
    @PostMapping("/users")
    public ResponseEntity<?> createUser(@Valid @RequestBody SignupRequest signUpRequest) {
       if (userRepository.existsByUsername(signUpRequest.getUsername())) {
@@ -116,22 +112,6 @@ public class UserController {
 
 
     @PutMapping("/users/{id}")
-    /*public ResponseEntity<User> updateUser(@PathVariable(value = "id") Long userId,
-                                           @RequestBody SignupRequest signupRequest) throws ResourceNotFoundException {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("Utilisateur non trouvé pour cet id: " + userId));
-
-      user.setEmail(signupRequest.getEmail());
-        user.setLastname(signupRequest.getLastname());
-        user.setFirstname(signupRequest.getFirstname());
-        user.setUsername(signupRequest.getUsername());
-        user.setEnabled(signupRequest.getEnabled());
-
-        user.setPoste(signupRequest.getPoste());
-
-        final User updatedUser = userRepository.save(user);
-        return ResponseEntity.ok(updatedUser);
-    }*/
     public ResponseEntity<User> updateUser(@PathVariable(value = "id") Long userId,
                                            @RequestBody SignupRequest signupRequest
                                            ) throws ResourceNotFoundException {

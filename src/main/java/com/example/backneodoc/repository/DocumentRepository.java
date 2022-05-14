@@ -13,31 +13,20 @@ import java.util.Optional;
 @Repository
 public interface DocumentRepository extends JpaRepository<Document, Long> {
 
-    Optional<Document> findByTitre(String name);
+   // Optional<Document> findByTitre(String name);
     List<Document> findAll(Sort by);
 
-    List<Document> getDocumentsByType(String type);
-    List<Document> getDocumentsByTitre(String titre);
-    List<Document> getDocumentsByTags(String tag);
-
-    List<Document> findAllByTitre(String name);
-    List<Document>  findByTitreContaining(String name);
+    List<Document> findAllByName(String name);
+    List<Document>  findByNameContaining(String name);
     List<Document> findByDepartementsContaining(String dep);
-    List<Document> findByTypeContaining(String dep);
-    List<Document> findByTagsContaining(String dep);
+    List<Document> findByContentTypeContaining(String dep);
+    //List<Document> findByTagsContaining(String dep);
     List<Document> findByDepartements(String dep);
     Optional<Document> findById(Long id);
-
-    Boolean existsByTitre(String titre);
-
-   // Document findByDepartements(String dep);
-    List<Document> searchDocumentByTitreIsContaining(String titre);
-    List<Document> searchDocumentByDepartementsIsContaining(String dep);
-    List<Document> searchDocumentByTypeIsContaining(String type);
-    List<Document> searchDocumentByTagsIsContaining(String tag);
+    Optional<Document> findByName(String titre);
 
 
-    @Query(value="select document.id,document.data,document.titre,document.type,document.departement,document.owner from document,tags,doc_tag where tags.libelle=?1 and tags.id=doc_tag.tag_id and document.id=doc_tag.doc_id",nativeQuery=true)
+    @Query(value="select document.id,document.name,document.contentType,document.departement,document.owner,document.path,document.size from document,tags,doc_tag where tags.libelle=?1 and tags.id=doc_tag.tag_id and document.id=doc_tag.doc_id",nativeQuery=true)
             List<Document> searchDocumentByTags(String libelle);
 
 
